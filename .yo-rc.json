@@ -1,0 +1,21 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.4",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.12.0"
+    },
+    "version": "1.19.0",
+    "libraryName": "ag-showcase-grid",
+    "libraryId": "f3584075-a963-486b-86b4-055aa5c0a3ab",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "ag-showcase-grid",
+    "solutionShortDescription": "ag-showcase-grid description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
