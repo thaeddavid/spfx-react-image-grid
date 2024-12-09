@@ -13,6 +13,7 @@
   },
   "externals": {},
   "localizedResources": {
-    "ShowcaseGridWebPartStrings": "lib/webparts/showcaseGrid/loc/{locale}.js"
+    "ShowcaseGridWebPartStrings": "lib/webparts/showcaseGrid/loc/{locale}.js",
+    "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js"
   }
 }
