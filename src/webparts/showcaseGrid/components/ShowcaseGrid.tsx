@@ -7,8 +7,28 @@ export default class ShowcaseGrid extends React.Component<IShowcaseGridProps, {}
     return { __html: html };
   }
 
+  private hasContent(gridItems: any[]): boolean {
+    return gridItems?.some(item => 
+      item?.imageUrl?.fileAbsoluteUrl || 
+      item?.title || 
+      item?.description || 
+      item?.linkUrl
+    );
+  }
+
   public render(): React.ReactElement<IShowcaseGridProps> {
     const { gridItems } = this.props;
+
+    if (!this.hasContent(gridItems)) {
+      return (
+        <div className={styles.showcaseGrid}>
+          <div className={styles.placeholder}>
+            <h2>No Content Added Yet</h2>
+            <p>Configure this web part by clicking the edit button and adding images and content in the properties panel.</p>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className={styles.showcaseGrid}>
