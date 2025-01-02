@@ -6,6 +6,8 @@ export interface IShowcaseGridProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   gridItems: IShowcaseItem[];
+  columns: number;
+  rows: number;
 }
 
 export interface IShowcaseItem {

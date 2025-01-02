@@ -3,7 +3,7 @@
   "solution": {
     "name": "ag-showcase-grid-client-side-solution",
     "id": "f3584075-a963-486b-86b4-055aa5c0a3ab",
-    "version": "1.0.0.3",
+    "version": "1.0.0.4",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
@@ -16,10 +16,10 @@
     },
     "metadata": {
       "shortDescription": {
-        "default": "ag-showcase-grid description"
+        "default": "AVENIR GLOBAL - Showcase Grid"
       },
       "longDescription": {
-        "default": "ag-showcase-grid description"
+        "default": "Displays a grid of items with images, titles, descriptions, and links."
       },
       "screenshotPaths": [],
       "videoUrl": "",
@@ -30,7 +30,7 @@
         "title": "ag-showcase-grid Feature",
         "description": "The feature that activates elements of the ag-showcase-grid solution.",
         "id": "54c06cc3-8e6b-46c1-81f6-3431777c4b13",
-        "version": "1.0.0.3"
+        "version": "1.0.0.4"
       }
     ]
   },

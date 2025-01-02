@@ -3,7 +3,8 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   type IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneSlider
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
@@ -15,6 +16,8 @@ import { IShowcaseItem, IShowcaseGridProps } from './components/IShowcaseGridPro
 
 export interface IShowcaseGridWebPartProps {
   gridItems: IShowcaseItem[];
+  columns: number;
+  rows: number;
 }
 
 export default class ShowcaseGridWebPart extends BaseClientSideWebPart<IShowcaseGridWebPartProps> {
@@ -30,7 +33,9 @@ export default class ShowcaseGridWebPart extends BaseClientSideWebPart<IShowcase
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        gridItems: this.properties.gridItems || []
+        gridItems: this.properties.gridItems || [],
+        columns: this.properties.columns || 2,
+        rows: this.properties.rows || 2
       }
     );
 
@@ -99,6 +104,9 @@ export default class ShowcaseGridWebPart extends BaseClientSideWebPart<IShowcase
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
+    // Calculate total number of grid items based on rows and columns
+    const totalItems = (this.properties.rows || 2) * (this.properties.columns || 2);
+    
     return {
       pages: [
         {
@@ -107,63 +115,42 @@ export default class ShowcaseGridWebPart extends BaseClientSideWebPart<IShowcase
           },
           groups: [
             {
-              groupName: "Grid Item 1",
+              groupName: "Grid Layout",
               groupFields: [
-                PropertyFieldFilePicker('gridItems[0].imageUrl', {
-                  context: this.context as any,
-                  filePickerResult: {
-                    fileAbsoluteUrl: this.properties.gridItems?.[0]?.imageUrl || '',
-                    fileName: '',
-                    fileNameWithoutExtension: '',
-                    downloadFileContent: () => Promise.resolve('')
-                  } as any,
-                  onPropertyChange: (propertyPath: string, newValue: any) => {
-                    console.log('File picker value:', newValue);
-                    if (newValue && typeof newValue === 'object') {
-                      this.properties.gridItems = this.properties.gridItems || [];
-                      this.properties.gridItems[0] = this.properties.gridItems[0] || {};
-                      this.properties.gridItems[0].imageUrl = 
-                        newValue.serverRelativeUrl || 
-                        newValue.fileAbsoluteUrl || 
-                        newValue.fileName || 
-                        '';
-                    }
-                  },
-                  onSave: (e: any) => {},
-                  properties: this.properties,
-                  label: "Image",
-                  accepts: [".gif", ".jpg", ".jpeg", ".bmp", ".dib", ".tif", ".tiff", ".ico", ".png", ".jxr", ".svg"],
-                  buttonLabel: "Choose Image",
-                  key: "filePickerFieldId1"
+                PropertyPaneSlider('columns', {
+                  label: "Number of Columns",
+                  min: 1,
+                  max: 3,
+                  value: this.properties.columns || 2,
+                  showValue: true,
+                  step: 1
                 }),
-                PropertyPaneTextField('gridItems[0].title', { label: "Title" }),
-                PropertyPaneTextField('gridItems[0].description', { 
-                  label: "Description",
-                  multiline: true,
-                  rows: 6,
-                  resizable: true 
-                }),
-                PropertyPaneTextField('gridItems[0].linkUrl', { label: "Link URL" }),
-                PropertyPaneTextField('gridItems[0].linkText', { label: "Link Text" })
+                PropertyPaneSlider('rows', {
+                  label: "Number of Rows",
+                  min: 1,
+                  max: 3,
+                  value: this.properties.rows || 2,
+                  showValue: true,
+                  step: 1
+                })
               ]
             },
-            {
-              groupName: "Grid Item 2",
+            ...Array.from({ length: totalItems }, (_, i) => ({
+              groupName: `Grid Item ${i + 1}`,
               groupFields: [
-                PropertyFieldFilePicker('gridItems[1].imageUrl', {
+                PropertyFieldFilePicker(`gridItems[${i}].imageUrl`, {
                   context: this.context as any,
                   filePickerResult: {
-                    fileAbsoluteUrl: this.properties.gridItems?.[1]?.imageUrl || '',
+                    fileAbsoluteUrl: this.properties.gridItems?.[i]?.imageUrl || '',
                     fileName: '',
                     fileNameWithoutExtension: '',
                     downloadFileContent: () => Promise.resolve('')
                   } as any,
                   onPropertyChange: (propertyPath: string, newValue: any) => {
-                    console.log('File picker value:', newValue);
                     if (newValue && typeof newValue === 'object') {
                       this.properties.gridItems = this.properties.gridItems || [];
-                      this.properties.gridItems[1] = this.properties.gridItems[1] || {};
-                      this.properties.gridItems[1].imageUrl = 
+                      this.properties.gridItems[i] = this.properties.gridItems[i] || {};
+                      this.properties.gridItems[i].imageUrl = 
                         newValue.serverRelativeUrl || 
                         newValue.fileAbsoluteUrl || 
                         newValue.fileName || 
@@ -175,101 +162,19 @@ export default class ShowcaseGridWebPart extends BaseClientSideWebPart<IShowcase
                   label: "Image",
                   accepts: [".gif", ".jpg", ".jpeg", ".bmp", ".dib", ".tif", ".tiff", ".ico", ".png", ".jxr", ".svg"],
                   buttonLabel: "Choose Image",
-                  key: "filePickerFieldId2"
+                  key: `filePickerFieldId${i + 1}`
                 }),
-                PropertyPaneTextField('gridItems[1].title', { label: "Title" }),
-                PropertyPaneTextField('gridItems[1].description', { 
+                PropertyPaneTextField(`gridItems[${i}].title`, { label: "Title" }),
+                PropertyPaneTextField(`gridItems[${i}].description`, { 
                   label: "Description",
                   multiline: true,
                   rows: 6,
                   resizable: true 
                 }),
-                PropertyPaneTextField('gridItems[1].linkUrl', { label: "Link URL" }),
-                PropertyPaneTextField('gridItems[1].linkText', { label: "Link Text" })
+                PropertyPaneTextField(`gridItems[${i}].linkUrl`, { label: "Link URL" }),
+                PropertyPaneTextField(`gridItems[${i}].linkText`, { label: "Link Text" })
               ]
-            },
-            {
-              groupName: "Grid Item 3",
-              groupFields: [
-                PropertyFieldFilePicker('gridItems[2].imageUrl', {
-                  context: this.context as any,
-                  filePickerResult: {
-                    fileAbsoluteUrl: this.properties.gridItems?.[2]?.imageUrl || '',
-                    fileName: '',
-                    fileNameWithoutExtension: '',
-                    downloadFileContent: () => Promise.resolve('')
-                  } as any,
-                  onPropertyChange: (propertyPath: string, newValue: any) => {
-                    console.log('File picker value:', newValue);
-                    if (newValue && typeof newValue === 'object') {
-                      this.properties.gridItems = this.properties.gridItems || [];
-                      this.properties.gridItems[2] = this.properties.gridItems[2] || {};
-                      this.properties.gridItems[2].imageUrl = 
-                        newValue.serverRelativeUrl || 
-                        newValue.fileAbsoluteUrl || 
-                        newValue.fileName || 
-                        '';
-                    }
-                  },
-                  onSave: (e: any) => {},
-                  properties: this.properties,
-                  label: "Image",
-                  accepts: [".gif", ".jpg", ".jpeg", ".bmp", ".dib", ".tif", ".tiff", ".ico", ".png", ".jxr", ".svg"],
-                  buttonLabel: "Choose Image",
-                  key: "filePickerFieldId3"
-                }),
-                PropertyPaneTextField('gridItems[2].title', { label: "Title" }),
-                PropertyPaneTextField('gridItems[2].description', { 
-                  label: "Description",
-                  multiline: true,
-                  rows: 6,
-                  resizable: true 
-                }),
-                PropertyPaneTextField('gridItems[2].linkUrl', { label: "Link URL" }),
-                PropertyPaneTextField('gridItems[2].linkText', { label: "Link Text" })
-              ]
-            },
-            {
-              groupName: "Grid Item 4",
-              groupFields: [
-                PropertyFieldFilePicker('gridItems[3].imageUrl', {
-                  context: this.context as any,
-                  filePickerResult: {
-                    fileAbsoluteUrl: this.properties.gridItems?.[3]?.imageUrl || '',
-                    fileName: '',
-                    fileNameWithoutExtension: '',
-                    downloadFileContent: () => Promise.resolve('')
-                  } as any,
-                  onPropertyChange: (propertyPath: string, newValue: any) => {
-                    console.log('File picker value:', newValue);
-                    if (newValue && typeof newValue === 'object') {
-                      this.properties.gridItems = this.properties.gridItems || [];
-                      this.properties.gridItems[3] = this.properties.gridItems[3] || {};
-                      this.properties.gridItems[3].imageUrl = 
-                        newValue.serverRelativeUrl || 
-                        newValue.fileAbsoluteUrl || 
-                        newValue.fileName || 
-                        '';
-                    }
-                  },
-                  onSave: (e: any) => {},
-                  properties: this.properties,
-                  label: "Image",
-                  accepts: [".gif", ".jpg", ".jpeg", ".bmp", ".dib", ".tif", ".tiff", ".ico", ".png", ".jxr", ".svg"],
-                  buttonLabel: "Choose Image",
-                  key: "filePickerFieldId4"
-                }),
-                PropertyPaneTextField('gridItems[3].title', { label: "Title" }),
-                PropertyPaneTextField('gridItems[3].description', { 
-                  label: "Description",
-                  multiline: true,
-                  rows: 6,
-                  resizable: true 
-                }),
-                PropertyPaneTextField('gridItems[3].linkUrl', { label: "Link URL" }),
-                PropertyPaneTextField('gridItems[3].linkText', { label: "Link Text" })
-              ]
-            }
+            }))
           ]
         }
       ]

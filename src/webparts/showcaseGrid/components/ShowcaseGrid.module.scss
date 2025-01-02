@@ -5,10 +5,28 @@
 
   .gridContainer {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(var(--grid-columns, 2), 1fr);
     gap: 0;
     max-width: 1020px;
     margin: 0 auto;
+
+    // For 3-column layout
+    &[style*="--grid-columns: 3"] {
+      > .gridItem:last-child:nth-child(3n-2) {
+        grid-column: 1 / -1;  // Stretch last item if alone
+      }
+      > .gridItem:nth-last-child(2):nth-child(3n-1),
+      > .gridItem:last-child:nth-child(3n-1) {
+        grid-column: span 2;  // Stretch last two items if in pair
+      }
+    }
+
+    // For 2-column layout
+    &[style*="--grid-columns: 2"] {
+      > .gridItem:last-child:nth-child(2n+1) {
+        grid-column: 1 / -1;  // Stretch last item if alone
+      }
+    }
   }
 
   .placeholder {
